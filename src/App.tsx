@@ -1,6 +1,8 @@
+import React from "react";
 import "./App.css";
+
 import { AppProvider } from "./AppContext";
-import RepoList from "./components/RepoList";
+import RepoSearch from "./components/RepoSearch";
 
 function App() {
   return (
@@ -9,7 +11,7 @@ function App() {
         <h1>Repo List</h1>
       </header>
       <AppProvider>
-        <RepoList />
+        <RepoSearch />
       </AppProvider>
     </div>
   );

@@ -1,5 +1,38 @@
 import { Octokit } from "octokit";
 
+export enum DefaultRepoType {
+  All = "all",
+}
+
+export enum OrgRepoType {
+  Public = "public",
+  Private = "private",
+  Forks = "forks",
+  Sources = "sources",
+  Member = "member",
+}
+
+export enum UserRepoType {
+  Owner = "owner",
+  Member = "member",
+}
+
+export enum Sort {
+  Full_name = "full_name",
+  Created = "created",
+  Updated = "updated",
+  Pushed = "pushed",
+}
+export enum SortDirection {
+  Default = "default",
+  Asc = "asc",
+  Desc = "desc",
+}
+
+const headers = {
+  "X-GitHub-Api-Version": "2022-11-28",
+};
+
 export default class OctokitService {
   octokit: Octokit;
 
@@ -7,21 +40,43 @@ export default class OctokitService {
     this.octokit = new Octokit({});
   }
 
-  async listOrgRepos(org: string) {
-    return this.octokit.request(`GET /orgs/{org}/repos`, {
+  async listOrgRepos(
+    org: string,
+    type: DefaultRepoType | OrgRepoType,
+    sort: Sort,
+    direction: SortDirection,
+    page: number
+  ) {
+    const repos = await this.octokit.request(`GET /orgs/{org}/repos`, {
       org,
-      headers: {
-        "X-GitHub-Api-Version": "2022-11-28",
-      },
+      type,
+      sort,
+      direction: direction === SortDirection.Default ? undefined : direction,
+      per_page: 10,
+      page,
+      headers,
     });
+
+    return repos;
   }
 
-  async listUserRepos(user: string) {
-    return this.octokit.request("GET /users/{username}/repos", {
-      username: user,
-      headers: {
-        "X-GitHub-Api-Version": "2022-11-28",
-      },
+  async listUserRepos(
+    username: string,
+    type: DefaultRepoType | UserRepoType,
+    sort: Sort,
+    direction: SortDirection,
+    page: number
+  ) {
+    const repos = await this.octokit.request("GET /users/{username}/repos", {
+      username,
+      type,
+      sort,
+      direction: direction === SortDirection.Default ? undefined : direction,
+      per_page: 10,
+      page,
+      headers,
     });
+
+    return repos;
   }
 }

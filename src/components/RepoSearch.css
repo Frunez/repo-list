@@ -1,0 +1,23 @@
+.Repo-List-container {
+  display: flex;
+  flex-direction: column;
+  margin: 24px;
+}
+
+.Repo-List-form {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  margin: 0;
+  width: 100%;
+}
+
+.Repo-List-flex-item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0 10px;
+  margin: 0;
+}
