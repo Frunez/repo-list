@@ -6,7 +6,7 @@ This is a React + Typescript application that uses the Github API, Ockokit, to l
 
 As mentioned before I used Octokit dependency which makes making requests to the Github API very easy. To get it integrated I used React Context to provide the Octokit instance to the rest of the application, this also made mocking and testing much easier as it de-couples the UI from service logic. I noticed octokit also has a graphql client, which I would have used if I had more time to explore it, but for this case just using the REST API was the simplest solution.
 
-The only other non dev dependency is react-dropdown to be able to easily implement dropdowns without. I found during writing tests however that this library does not play well with react-testing-library, if given more time I would have switched it for another library or made custom dropdowns.
+The only other non dev dependency is react-dropdown to be able to easily implement dropdowns without having to create my own (a hot topic in a previous job). I found during writing tests however that this library does not play well with react-testing-library, and the docs do not provide a testing strategy, if given more time I would have switched it for another library or made custom dropdown.
 
 I paid some attention to the folder structure to give some logical seperation between the various components and services. Note that src/components/common only has an ErrorMessage Component, this demonstrates how I would treat components that would likely be re-used across the application, I could have portentially added button, input components and flex table components as well, a basis to start a component library with something like Storybook.
 
