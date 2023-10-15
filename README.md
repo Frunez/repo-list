@@ -28,7 +28,7 @@ yarn start
 
 `yarn start` will run the application on port 3000
 
-Steps to tests:
+Steps to test:
 
 ```bash
 yarn
