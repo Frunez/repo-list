@@ -9,7 +9,7 @@ interface ErrorMessageProps {
 export default function ErrorMessage({ message }: ErrorMessageProps) {
   return (
     <div className="error">
-      <p>{message}</p>
+      <p data-testid="error-message">{message}</p>
     </div>
   );
 }

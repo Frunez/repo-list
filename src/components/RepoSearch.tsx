@@ -5,8 +5,10 @@ import "../App.css";
 import React, { useContext, useEffect, useState } from "react";
 import Dropdown from "react-dropdown";
 
+import type { Repository } from "@octokit/webhooks-types";
+
 import { AppContext } from "../AppContext";
-import { DefaultRepoType, OrgRepoType, Sort, SortDirection, UserRepoType } from "../services/octokit";
+import { DefaultRepoType, OrgRepoType, PER_PAGE_LIMIT, Sort, SortDirection, UserRepoType } from "../services/octokit";
 import ErrorMessage from "./common/ErrorMessage";
 import RepoList from "./RepoListComponents/RepoList";
 import RepoListPageControl from "./RepoListComponents/RepoListPageControl";
@@ -37,10 +39,20 @@ export default function RepoSearch() {
   useEffect(() => {
     if (searchRequest.length === 0) return;
 
-    getRepoList().catch(() => {
-      setRepos([]);
-      setError("Organization or user not found");
-    });
+    getRepoList()
+      .then((repos) => {
+        if (repos && repos.length > 0) {
+          setError(null);
+          setRepos(repos);
+          return;
+        }
+
+        setError(`No repositories found for ${searchRequest}`);
+      })
+      .catch(() => {
+        setRepos([]);
+        setError("Organization or user not found");
+      });
   }, [searchRequest, page, type, repoType, sort, direction]);
 
   const handleTypeDropdownChange = (e: any) => {
@@ -48,19 +60,13 @@ export default function RepoSearch() {
     setRepoType(DefaultRepoType.All);
   };
 
-  async function getRepoList(): Promise<void> {
-    const repos =
+  async function getRepoList(): Promise<Repository[] | undefined> {
+    const response =
       type === SearchType.Org
         ? await appContext?.octokitService.listOrgRepos(searchRequest, repoType, sort, direction, page)
         : await appContext?.octokitService.listUserRepos(searchRequest, repoType, sort, direction, page);
 
-    if (repos?.data && repos.data.length > 0) {
-      setError(null);
-      setRepos(repos.data);
-      return;
-    }
-
-    setError(`No repositories found for ${searchRequest}`);
+    return response?.data as Repository[] | undefined;
   }
 
   const handleSearchInputChange = (e: any) => {
@@ -117,8 +123,14 @@ export default function RepoSearch() {
           value={SearchType.Org}
         />
         <div className="Repo-List-flex-item flex-1">
-          <input className="input" type="text" value={searchInput} onChange={handleSearchInputChange} />
-          <button className="button" type="submit" onClick={handleSubmit}>
+          <input
+            className="input"
+            type="text"
+            value={searchInput}
+            onChange={handleSearchInputChange}
+            data-testid="search-input"
+          />
+          <button className="button" type="submit" onClick={handleSubmit} data-testid="search-button">
             Get Repositories
           </button>
         </div>
@@ -145,7 +157,14 @@ export default function RepoSearch() {
       </form>
 
       {repos.length > 0 && (
-        <RepoListPageControl disableNext={!!error} page={page} handleClickPageChange={handleClickPageChange} />
+        <div style={{ display: "flex" }} data-testid="repo-list-page-control">
+          <h2>{`${searchRequest}'s`} repositories</h2>
+          <RepoListPageControl
+            disableNext={!!error || repos.length < PER_PAGE_LIMIT}
+            page={page}
+            handleClickPageChange={handleClickPageChange}
+          />
+        </div>
       )}
 
       {error && <ErrorMessage message={error} />}

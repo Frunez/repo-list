@@ -31,7 +31,7 @@ const SortIcon = ({ item, sortKey, sortDirection }: SortIconProps) => {
 
 export default function RepoList({ repos, sortKey, sortDirection, handleSort }: RepoListProps) {
   return (
-    <div>
+    <div data-testid="repo-list">
       <ul className="list">
         <li className="list-header" key={"header"}>
           <div onClick={() => handleSort(Sort.Full_name)} className="list-column clickable" style={{ flex: 2 }}>

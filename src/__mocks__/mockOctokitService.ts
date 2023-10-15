@@ -1,45 +1,26 @@
-import { Octokit } from "octokit";
-
-export enum DefaultRepoType {
-  All = "all",
-}
-
-export enum OrgRepoType {
-  Public = "public",
-  Private = "private",
-  Forks = "forks",
-  Sources = "sources",
-  Member = "member",
-}
-
-export enum UserRepoType {
-  Owner = "owner",
-  Member = "member",
-}
-
-export enum Sort {
-  Full_name = "full_name",
-  Created = "created",
-  Updated = "updated",
-  Pushed = "pushed",
-}
-export enum SortDirection {
-  Default = "default",
-  Asc = "asc",
-  Desc = "desc",
-}
+import { DefaultRepoType, OrgRepoType, Sort, SortDirection, UserRepoType } from "../services/octokit";
 
 const headers = {
-  "X-GitHub-Api-Version": "2022-11-28",
+  "X-GitHub-Api-Version": "mock",
 };
 
-export const PER_PAGE_LIMIT = 10;
+interface MockOctokit {
+  request: jest.Mock;
+}
 
-export default class OctokitService {
-  octokit: Octokit;
+class MockOctokit {
+  request;
 
   constructor() {
-    this.octokit = new Octokit({});
+    this.request = jest.fn();
+  }
+}
+
+export default class OctokitService {
+  octokit: MockOctokit;
+
+  constructor() {
+    this.octokit = new MockOctokit();
   }
 
   async listOrgRepos(
@@ -54,7 +35,7 @@ export default class OctokitService {
       type,
       sort,
       direction: direction === SortDirection.Default ? undefined : direction,
-      per_page: PER_PAGE_LIMIT,
+      per_page: 10,
       page,
       headers,
     });
@@ -74,7 +55,7 @@ export default class OctokitService {
       type,
       sort,
       direction: direction === SortDirection.Default ? undefined : direction,
-      per_page: PER_PAGE_LIMIT,
+      per_page: 10,
       page,
       headers,
     });
