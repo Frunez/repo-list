@@ -1,6 +1,8 @@
 import type { Repository } from "@octokit/webhooks-types";
 import React from "react";
 
+import '../../App.css'
+
 interface RepoListItemProps {
   repo: Repository;
 }
@@ -25,15 +27,15 @@ export default function RepoListItem({ repo }: RepoListItemProps) {
       >
         {repo.name}
       </a>
-      <span className="list-column" style={{ flex: 1 }}>
+      <div className="list-column" style={{ flex: 1 }}>
         {formatDate(repo.created_at)}
-      </span>
-      <span className="list-column" style={{ flex: 1 }}>
+      </div>
+      <div className="list-column" style={{ flex: 1 }}>
         {formatDate(repo.updated_at)}
-      </span>
-      <span className="list-column" style={{ flex: 1 }}>
+      </div>
+      <div className="list-column" style={{ flex: 1 }}>
         {repo.pushed_at && formatDate(repo.pushed_at)}
-      </span>
+      </div>
     </li>
   );
 }

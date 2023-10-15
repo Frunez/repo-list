@@ -9,13 +9,14 @@ import { AppContext } from "../AppContext";
 import { DefaultRepoType, OrgRepoType, Sort, SortDirection, UserRepoType } from "../services/octokit";
 import ErrorMessage from "./common/ErrorMessage";
 import RepoList from "./RepoListComponents/RepoList";
+import RepoListPageControl from "./RepoListComponents/RepoListPageControl";
 
 enum SearchType {
   User = "user",
   Org = "organization",
 }
 
-enum PageDirection {
+export enum PageDirection {
   Prev = "prev",
   Next = "next",
 }
@@ -33,6 +34,20 @@ export default function RepoSearch() {
   const [direction, setDirection] = useState(SortDirection.Desc);
   const [page, setPage] = useState(1);
 
+  useEffect(() => {
+    if (searchRequest.length === 0) return;
+
+    getRepoList().catch(() => {
+      setRepos([]);
+      setError("Organization or user not found");
+    });
+  }, [searchRequest, page, type, repoType, sort, direction]);
+
+  const handleTypeDropdownChange = (e: any) => {
+    setType(e.value as SearchType);
+    setRepoType(DefaultRepoType.All);
+  };
+
   async function getRepoList(): Promise<void> {
     const repos =
       type === SearchType.Org
@@ -48,21 +63,7 @@ export default function RepoSearch() {
     setError(`No repositories found for ${searchRequest}`);
   }
 
-  useEffect(() => {
-    if (searchRequest.length === 0) return;
-
-    getRepoList().catch(() => {
-      setRepos([]);
-      setError("Organization or user not found");
-    });
-  }, [searchRequest, page, type, repoType, sort, direction]);
-
-  const handleTypeDropdownChange = (e: any) => {
-    setType(e.value as SearchType);
-    setRepoType(DefaultRepoType.All);
-  };
-
-  const handleInputChange = (e: any) => {
+  const handleSearchInputChange = (e: any) => {
     e.preventDefault();
     setError("");
     setSearchInput(e.target.value);
@@ -88,20 +89,22 @@ export default function RepoSearch() {
     setSearchRequest(searchInput);
   };
 
-  const handleClickPageChange = (e: any, pageDirection: PageDirection) => {
-    e.preventDefault();
-    const nextPage = pageDirection === PageDirection.Next ? page + 1 : page - 1;
-    setPage(nextPage);
-  };
-
   const handleSort = (sortKey: Sort) => {
     setPage(1);
+
     if (sortKey === sort) {
       setDirection(direction === SortDirection.Asc ? SortDirection.Desc : SortDirection.Asc);
       return;
     }
+
     sortKey === Sort.Full_name ? setDirection(SortDirection.Asc) : setDirection(SortDirection.Desc);
     setSort(sortKey);
+  };
+
+  const handleClickPageChange = (e: any, pageDirection: PageDirection) => {
+    e.preventDefault();
+    const nextPage = pageDirection === PageDirection.Next ? page + 1 : page - 1;
+    setPage(nextPage);
   };
 
   return (
@@ -114,7 +117,7 @@ export default function RepoSearch() {
           value={SearchType.Org}
         />
         <div className="Repo-List-flex-item flex-1">
-          <input className="input" type="text" value={searchInput} onChange={handleInputChange} />
+          <input className="input" type="text" value={searchInput} onChange={handleSearchInputChange} />
           <button className="button" type="submit" onClick={handleSubmit}>
             Get Repositories
           </button>
@@ -142,33 +145,14 @@ export default function RepoSearch() {
       </form>
 
       {repos.length > 0 && (
-        <div style={{ display: "flex" }}>
-          <h2>Repositories</h2>
-          <div className="Repo-List-flex-item flex-0 center">
-            <button
-              className="button"
-              type="button"
-              disabled={page === 1}
-              onClick={(e) => handleClickPageChange(e, PageDirection.Prev)}
-            >
-              prev
-            </button>
-            <div className="flex-0 center">{page}</div>
-            <button
-              className="button"
-              type="button"
-              disabled={!!error}
-              onClick={(e) => handleClickPageChange(e, PageDirection.Next)}
-            >
-              next
-            </button>
-          </div>
-        </div>
+        <RepoListPageControl disableNext={!!error} page={page} handleClickPageChange={handleClickPageChange} />
       )}
 
       {error && <ErrorMessage message={error} />}
 
-      {!error && repos.length > 0 && <RepoList repos={repos} sortKey={sort} sortDirection={direction} handleSort={handleSort} />}
+      {!error && repos.length > 0 && (
+        <RepoList repos={repos} sortKey={sort} sortDirection={direction} handleSort={handleSort} />
+      )}
     </div>
   );
 }
