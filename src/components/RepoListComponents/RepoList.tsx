@@ -34,16 +34,16 @@ export default function RepoList({ repos, sortKey, sortDirection, handleSort }: 
     <div>
       <ul className="list">
         <li className="list-header" key={"header"}>
-          <div onClick={() => handleSort(Sort.Full_name)} className="list-column" style={{ flex: 2 }}>
+          <div onClick={() => handleSort(Sort.Full_name)} className="list-column clickable" style={{ flex: 2 }}>
             Name &nbsp; <SortIcon item={Sort.Full_name} sortKey={sortKey} sortDirection={sortDirection} />
           </div>
-          <div onClick={() => handleSort(Sort.Created)} className="list-column" style={{ flex: 1 }}>
+          <div onClick={() => handleSort(Sort.Created)} className="list-column clickable" style={{ flex: 1 }}>
             Created &nbsp; <SortIcon item={Sort.Created} sortKey={sortKey} sortDirection={sortDirection} />
           </div>
-          <div onClick={() => handleSort(Sort.Updated)} className="list-column" style={{ flex: 1 }}>
+          <div onClick={() => handleSort(Sort.Updated)} className="list-column clickable" style={{ flex: 1 }}>
             Updated &nbsp; <SortIcon item={Sort.Updated} sortKey={sortKey} sortDirection={sortDirection} />
           </div>
-          <div onClick={() => handleSort(Sort.Pushed)} className="list-column" style={{ flex: 1 }}>
+          <div onClick={() => handleSort(Sort.Pushed)} className="list-column clickable" style={{ flex: 1 }}>
             Pushed &nbsp; <SortIcon item={Sort.Pushed} sortKey={sortKey} sortDirection={sortDirection} />
           </div>
         </li>
